@@ -11,8 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.chzz.market.common.validation.annotation.ThousandMultiple;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.product.entity.Product;
 import org.chzz.market.domain.user.entity.User;
@@ -38,8 +38,7 @@ public class Auction extends BaseTimeEntity {
     private User winner;
 
     @Column
-    // TODO: @Pattern은 문자열에서만 적용가능 해서 임시 주석 처리 추후 수정 필요
-    // @Pattern(regexp = "^[1-9][0-9]*000$")
+    @ThousandMultiple
     private Long minPrice;
 
     @Column(columnDefinition = "varchar(20)")
