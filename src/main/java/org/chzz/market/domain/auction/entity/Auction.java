@@ -16,6 +16,7 @@ import org.chzz.market.common.validation.annotation.ThousandMultiple;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.product.entity.Product;
 import org.chzz.market.domain.user.entity.User;
+import org.springframework.security.core.parameters.P;
 
 @Getter
 @Entity
@@ -46,6 +47,20 @@ public class Auction extends BaseTimeEntity {
     private Status status;
 
     public enum Status {
-        //TODO 2024 07 18 14:07:49 : 경매 상태 구체화
+        PRE_ORDER("사전 등록"),
+        PENDING("대기 중"),
+        ACTIVE("진행 중"),
+        ENDED("종료"),
+        CANCELLED("취소 됨");
+
+        private final String description;
+
+        Status(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 }
