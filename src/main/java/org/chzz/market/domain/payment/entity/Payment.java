@@ -1,5 +1,7 @@
 package org.chzz.market.domain.payment.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +20,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.chzz.market.domain.auction.entity.Auction;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
+import org.chzz.market.domain.payment.dto.response.TossPaymentResponse;
+import org.chzz.market.domain.payment.error.PaymentErrorCode;
+import org.chzz.market.domain.payment.error.PaymentException;
 import org.chzz.market.domain.user.entity.User;
 
 @Getter
@@ -49,6 +54,12 @@ public class Payment extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(unique = true, nullable = false)
+    private String orderId;
+
+    @Column(nullable = false)
+    private String paymentKey;
+
     @PrePersist
     protected void onPrePersist() {
         if (this.status == null) {
@@ -56,18 +67,55 @@ public class Payment extends BaseTimeEntity {
         }
     }
 
-
-    public enum PaymentMethod {
-        CARD, CASH // Test 실행을 위해 임시 추가
+    private Payment(User payer, Auction auction, Long amount, PaymentMethod method, Status status, String orderId,
+                    String paymentKey) {
+        this.payer = payer;
+        this.auction = auction;
+        this.amount = amount;
+        this.method = method;
+        this.status = status;
+        this.orderId = orderId;
+        this.paymentKey = paymentKey;
     }
 
-    @Getter
+    public static Payment of(TossPaymentResponse tossPaymentResponse, Auction auction) {
+        return new Payment(
+                auction.getProduct().getUser(),
+                auction,
+                tossPaymentResponse.getTotalAmount(),
+                tossPaymentResponse.getMethod(),
+                tossPaymentResponse.getStatus(),
+                tossPaymentResponse.getOrderId(),
+                tossPaymentResponse.getPaymentKey());
+    }
+
     @AllArgsConstructor
-    public enum Status {
-        READY("ready"),
-        CANCELED("canceled"),
-        APPROVED("approve"),
-        PAYED("payed");
-        private final String name;
+    public enum PaymentMethod {
+        CARD("카드"),
+        VIRTUAL_ACCOUNT("가상계좌"),
+        EASY_PAYMENT("간편결제"),
+        MOBILE("휴대폰"),
+        ACCOUNT_TRANSFER("계좌이체"),
+        CULTURE_GIFT_CARD("문화상품권"),
+        BOOK_CULTURE_GIFT_CARD("도서문화상품권"),
+        GAME_CULTURE_GIFT_CARD("게임문화상품권"),
+        CASH("테스트용");
+
+        private final String description;
+
+        @JsonValue
+        public String getDescription() {
+            return this.description;
+        }
+
+        @JsonCreator
+        public static PaymentMethod fromDescription(String description) {
+            for (PaymentMethod method : PaymentMethod.values()) {
+                if (method.getDescription().equals(description)) {
+                    return method;
+                }
+            }
+            throw new PaymentException(PaymentErrorCode.INVALID_METHOD);
+        }
     }
 }

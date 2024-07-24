@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +50,6 @@ public class Auction extends BaseTimeEntity {
 
     public enum Status {
         //TODO 2024 07 18 14:07:49 : 경매 상태 구체화
-        PROCEEDING, COMPLETE, CANCEL
+        PROCEEDING, COMPLETE, CANCEL, DEFAULT;
     }
 }
