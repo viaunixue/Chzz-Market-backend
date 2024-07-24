@@ -16,7 +16,6 @@ import org.chzz.market.common.validation.annotation.ThousandMultiple;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.product.entity.Product;
 import org.chzz.market.domain.user.entity.User;
-import org.springframework.security.core.parameters.P;
 
 @Getter
 @Entity
@@ -40,7 +39,7 @@ public class Auction extends BaseTimeEntity {
 
     @Column
     @ThousandMultiple
-    private Long minPrice;
+    private int minPrice;
 
     @Column(columnDefinition = "varchar(20)")
     @Enumerated(EnumType.STRING)
