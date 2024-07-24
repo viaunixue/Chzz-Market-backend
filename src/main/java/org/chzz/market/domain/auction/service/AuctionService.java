@@ -13,6 +13,8 @@ import org.chzz.market.domain.user.entity.User;
 import org.chzz.market.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -46,7 +48,10 @@ public class AuctionService {
         auction = auctionRepository.save(auction);
 
         // 이미지 처리
-        imageService.saveProductImages(product, dto.getImages());
+        List<String> cdnPaths = imageService.saveProductImages(product, dto.getImages());
+
+        // 이미지 URL Logging
+        cdnPaths.forEach(path -> System.out.println("Uploaded image path: " + imageService.getFullImageUrl(path)));
 
         return auction.getId();
     }
