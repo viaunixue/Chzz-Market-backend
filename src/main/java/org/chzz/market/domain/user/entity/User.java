@@ -73,8 +73,12 @@ public class User extends BaseTimeEntity {
     private List<BankAccount> bankAccounts = new ArrayList<>();
 
     public enum UserRole {
+        // TEST 위해 임의 설정
+        USER, ADMIN, SELLER
     }
 
     public enum ProviderType {
+        // TEST 위해 임의 설정
+        LOCAL, GOOGLE, KAKAO
     }
 }

@@ -1,9 +1,7 @@
 package org.chzz.market.domain.bid.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.chzz.market.domain.auction.entity.Auction;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.user.entity.User;
@@ -15,6 +13,8 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Getter
 @Table
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bid extends BaseTimeEntity {
     @Id
