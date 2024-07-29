@@ -3,7 +3,6 @@ package org.chzz.market.domain.auction.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.chzz.market.common.error.exception.UserNotFoundException;
 import org.chzz.market.domain.auction.dto.request.AuctionCreateRequest;
@@ -15,12 +14,13 @@ import org.chzz.market.domain.product.repository.ProductRepository;
 import org.chzz.market.domain.user.entity.User;
 import org.chzz.market.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AuctionService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
@@ -30,6 +30,7 @@ public class AuctionService {
     private final ImageService imageService;
     private final UserRepository userRepository;
 
+    @Transactional
     public Long createAuction(AuctionCreateRequest dto) {
 
         // 사용자 데이터 조회
