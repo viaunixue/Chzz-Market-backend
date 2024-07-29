@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
+import org.chzz.market.common.error.exception.ImageUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3ImageUploader implements ImageUploader {
     private final AmazonS3 amazonS3Client;
-
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+    private final String bucket;
 
     @Override
     public String uploadImage(MultipartFile image) {
@@ -31,7 +30,7 @@ public class S3ImageUploader implements ImageUploader {
 
             return "/" + fileName; // CDN 경로 생성 (전체 URL 아닌 경로만)
         } catch (IOException e) {
-            throw new RuntimeException("이미지 업로드를 실패했습니다.", e);
+            throw new ImageUploadException("이미지 업로드를 실패했습니다.", e);
         }
     }
 
