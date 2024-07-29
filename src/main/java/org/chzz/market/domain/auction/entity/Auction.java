@@ -39,7 +39,7 @@ public class Auction extends BaseTimeEntity {
 
     @Column
     @ThousandMultiple
-    private int minPrice;
+    private Integer minPrice;
 
     @Column(columnDefinition = "varchar(20)")
     @Enumerated(EnumType.STRING)
