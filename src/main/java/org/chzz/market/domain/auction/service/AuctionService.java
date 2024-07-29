@@ -3,20 +3,26 @@ package org.chzz.market.domain.auction.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+
 import org.chzz.market.common.error.exception.UserNotFoundException;
 import org.chzz.market.domain.auction.dto.request.AuctionCreateRequest;
 import org.chzz.market.domain.auction.entity.Auction;
-import org.chzz.market.domain.auction.repository.AuctionRepository;
 import org.chzz.market.domain.image.service.ImageService;
 import org.chzz.market.domain.product.entity.Product;
 import org.chzz.market.domain.product.repository.ProductRepository;
-import org.chzz.market.domain.user.entity.User;
+import org.chzz.market.domain.auction.repository.AuctionRepository;
 import org.chzz.market.domain.user.repository.UserRepository;
+import org.chzz.market.domain.user.entity.User;
+import org.chzz.market.domain.auction.dto.AuctionResponse;
+import org.chzz.market.domain.product.entity.Product.Category;
+import org.chzz.market.domain.auction.entity.SortType;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +35,13 @@ public class AuctionService {
     private final AuctionRepository auctionRepository;
     private final ImageService imageService;
     private final UserRepository userRepository;
+  
+    public Page<AuctionResponse> getAuctionListByCategory(Category category, 
+                                                          SortType sortType, 
+                                                          Long userId,
+                                                          Pageable pageable) {
+        return auctionRepository.findAuctionsByCategory(category, sortType, userId, pageable);
+    }
 
     @Transactional
     public Long createAuction(AuctionCreateRequest dto) {
