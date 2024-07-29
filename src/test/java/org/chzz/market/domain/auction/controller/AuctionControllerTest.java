@@ -1,36 +1,51 @@
 package org.chzz.market.domain.auction.controller;
 
-import org.chzz.market.common.config.SecurityConfigTest;
+import com.amazonaws.services.s3.AmazonS3;
+import org.chzz.market.MarketApplication;
 import org.chzz.market.domain.auction.dto.request.AuctionCreateRequest;
 import org.chzz.market.domain.auction.service.AuctionService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.mockito.MockitoAnnotations;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AuctionController.class)
-@Import({SecurityConfigTest.class})
+@SpringBootTest(classes = {MarketApplication.class, AuctionControllerTest.TestConfig.class})
+@ActiveProfiles("test")
 class AuctionControllerTest {
 
     @Autowired
+    private WebApplicationContext webApplicationContext;
+
     private MockMvc mockMvc;
 
     @MockBean
     private AuctionService auctionService;
 
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
     @Test
     @DisplayName("경매 등록 모든 필드 정상 입력 시 성공 응답")
     void testCreateAuction() throws Exception {
+
         MockMultipartFile image1 = new MockMultipartFile(
                 "images",
                 "test.jpg",
@@ -66,7 +81,7 @@ class AuctionControllerTest {
                 .param("category", "ELECTRONICS")
                 .param("minPrice", "1000")
                 .param("preOrder", "false")
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/v1/auctions/1"))  // Location 헤더 검증 추가
                 .andExpect(content().string(""));
@@ -100,5 +115,16 @@ class AuctionControllerTest {
                         .param("preOrder", "false")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Configuration
+    static class TestConfig {
+
+        @Bean
+        @Primary
+        @Profile("test")
+        public AmazonS3 amazonS3() {
+            return mock(AmazonS3.class);
+        }
     }
 }
