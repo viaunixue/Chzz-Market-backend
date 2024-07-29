@@ -8,6 +8,8 @@ import org.chzz.market.domain.auction.service.AuctionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/auctions")
@@ -26,8 +28,10 @@ public class AuctionController {
      * 서버에서 S3에 업로드하는 경우
      */
     @PostMapping
-    public ResponseEntity<Long> createAuction(@ModelAttribute @Valid AuctionCreateRequest dto) {
+    public ResponseEntity<Void> createAuction(@ModelAttribute @Valid AuctionCreateRequest dto) {
         Long auctionId  = auctionService.createAuction(dto);
-        return ResponseEntity.ok().body(auctionId);
+        return ResponseEntity
+                .created(URI.create("/api/v1/auctions/" + auctionId))
+                .build();
     }
 }

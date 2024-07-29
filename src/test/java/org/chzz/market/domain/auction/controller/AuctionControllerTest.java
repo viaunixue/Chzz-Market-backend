@@ -16,8 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuctionController.class)
 @Import({SecurityConfigTest.class})
@@ -68,8 +67,9 @@ class AuctionControllerTest {
                 .param("minPrice", "1000")
                 .param("preOrder", "false")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isOk())
-                .andExpect(content().string("1"));
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/v1/auctions/1"))  // Location 헤더 검증 추가
+                .andExpect(content().string(""));
 
         verify(auctionService, times(1)).createAuction(any(AuctionCreateRequest.class));
     }
