@@ -31,8 +31,7 @@ public class AWSConfig {
                 .build();
     }
 
-    @Bean
-    public String S3BucketName() {
+    public String s3BucketName() {
         return bucket;
     }
 
