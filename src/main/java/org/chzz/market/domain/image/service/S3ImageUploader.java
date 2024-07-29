@@ -4,7 +4,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
+import org.chzz.market.common.error.GlobalErrorCode;
 import org.chzz.market.common.error.exception.ImageUploadException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,11 +18,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3ImageUploader implements ImageUploader {
     private final AmazonS3 amazonS3Client;
-    private final String bucket;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     @Override
     public String uploadImage(MultipartFile image) {
-        String fileName = generateFileName(image);
+        String fileName = image.getOriginalFilename();
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(image.getSize());
@@ -30,11 +34,7 @@ public class S3ImageUploader implements ImageUploader {
 
             return "/" + fileName; // CDN 경로 생성 (전체 URL 아닌 경로만)
         } catch (IOException e) {
-            throw new ImageUploadException("이미지 업로드를 실패했습니다.", e);
+            throw new ImageUploadException(GlobalErrorCode.IMAGE_UPLOAD_FAILED);
         }
-    }
-
-    private String generateFileName(MultipartFile file) {
-        return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
     }
 }
