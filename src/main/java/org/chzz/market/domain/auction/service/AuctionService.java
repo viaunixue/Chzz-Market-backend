@@ -1,5 +1,8 @@
 package org.chzz.market.domain.auction.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.chzz.market.common.error.exception.UserNotFoundException;
@@ -19,6 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class AuctionService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
+
     private final ProductRepository productRepository;
     private final AuctionRepository auctionRepository;
     private final ImageService imageService;
@@ -51,7 +57,7 @@ public class AuctionService {
         List<String> cdnPaths = imageService.saveProductImages(product, dto.getImages());
 
         // 이미지 URL Logging
-        cdnPaths.forEach(path -> System.out.println("Uploaded image path: " + imageService.getFullImageUrl(path)));
+        cdnPaths.forEach(path -> logger.info("Uploaded image path: {}", imageService.getFullImageUrl(path)));
 
         return auction.getId();
     }
