@@ -34,7 +34,7 @@ public class ImageService {
                     .build();
             imageRepository.save(imageEntity);
             return cdnPath;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     // 필요할 때 전체 URL 재구성
