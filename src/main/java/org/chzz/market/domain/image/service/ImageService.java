@@ -38,6 +38,7 @@ public class ImageService {
     }
 
     // 필요할 때 전체 URL 재구성
+    // 이미지 -> 서버에 들어왔는지 확인하는 로그에 사용
     public String getFullImageUrl(String cdnPath) {
         return "https://" + cloudfrontDomain + cdnPath;
     }

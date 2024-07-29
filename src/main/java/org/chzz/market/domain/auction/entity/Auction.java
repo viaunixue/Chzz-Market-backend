@@ -11,15 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.chzz.market.common.validation.annotation.ThousandMultiple;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import org.chzz.market.common.validation.annotation.ThousandMultiple;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.product.entity.Product;
 import org.chzz.market.domain.user.entity.User;
@@ -51,13 +48,12 @@ public class Auction extends BaseTimeEntity {
     @Column(columnDefinition = "varchar(20)")
     @Enumerated(EnumType.STRING)
     private Status status;
-  
+
     @Getter
     @AllArgsConstructor
     public enum Status {
-        PRE_ORDER("사전 등록"),
         PENDING("대기 중"),
-        ACTIVE("진행 중"),
+        PROCEEDING("진행 중"),
         ENDED("종료"),
         CANCELLED("취소 됨");
 
