@@ -53,6 +53,8 @@ public class Product extends BaseTimeEntity {
     @OneToMany(mappedBy = "product")
     private List<Like> likes = new ArrayList<>();
 
+    @Getter
+    @AllArgsConstructor
     public enum Category {
         ELECTRONICS("전자기기"),
         HOME_APPLIANCES("가전제품"),
@@ -64,13 +66,5 @@ public class Product extends BaseTimeEntity {
         OTHER("기타");
 
         private final String displayName;
-
-        Category(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
     }
 }
