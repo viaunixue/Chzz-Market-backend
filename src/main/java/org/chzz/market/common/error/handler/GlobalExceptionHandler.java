@@ -1,12 +1,13 @@
 package org.chzz.market.common.error.handler;
-
 import static org.chzz.market.common.error.GlobalErrorCode.INTERNAL_SERVER_ERROR;
 
 import lombok.extern.slf4j.Slf4j;
-import org.chzz.market.common.error.BusinessException;
+import org.chzz.market.common.error.exception.BusinessException;
 import org.chzz.market.common.error.ErrorCode;
 import org.chzz.market.common.error.ErrorResponse;
 import org.chzz.market.common.error.GlobalErrorCode;
+import org.chzz.market.common.error.exception.ImageUploadException;
+import org.chzz.market.common.error.exception.UserNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -53,8 +54,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logException(e, errorCode);
         return handleExceptionInternal(errorCode);
     }
-  
-  /**
+
+    /**
      * 유저를 찾지 못할 때 발생하는 커스텀 예외
      * @return e 커스텀 예외 메세지와 상태를 담은 {@link ResponseEntity}
      */
@@ -75,8 +76,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logException(e, errorCode);
         return handleExceptionInternal(errorCode);
     }
-  
-  
+
+
     /**
      * @param e 비즈니스 로직상 발생한 커스텀 예외
      * @return 커스텀 예외 메세지와 상태를 담은 {@link ResponseEntity}
@@ -99,7 +100,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(errorCode.getHttpStatus())
                 .body(ErrorResponse.from(errorCode));
     }
-    
     private void logException(final Exception e, final ErrorCode errorCode) {
         log.error(LOG_FORMAT,
                 e.getClass(),
