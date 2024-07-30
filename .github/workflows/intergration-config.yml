@@ -16,7 +16,8 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
       AWS_CLOUDFRONT_DOMAIN: ${{ secrets.AWS_CLOUDFRONT_DOMAIN }}
-
+      TEST_CLIENT_KEY: ${{ secrets.TEST_CLIENT_KEY }}
+      TEST_SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
 
     steps:
     - uses: actions/checkout@v4
