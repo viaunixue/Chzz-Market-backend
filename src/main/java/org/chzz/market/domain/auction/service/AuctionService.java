@@ -1,11 +1,11 @@
 package org.chzz.market.domain.auction.service;
 
-import org.chzz.market.common.error.GlobalErrorCode;
+import org.chzz.market.domain.user.error.UserException;
+import org.chzz.market.domain.user.error.exception.UserErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
-import org.chzz.market.common.error.exception.UserNotFoundException;
 import org.chzz.market.domain.auction.dto.request.AuctionCreateRequest;
 import org.chzz.market.domain.auction.entity.Auction;
 import org.chzz.market.domain.auction.dto.AuctionResponse;
@@ -41,7 +41,7 @@ public class AuctionService {
 
         // 사용자 데이터 조회
         User seller = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new UserNotFoundException(GlobalErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         // 상품 데이터 저장
         Product product = Product.builder()
