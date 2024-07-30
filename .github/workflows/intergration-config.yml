@@ -39,4 +39,14 @@ jobs:
       run: ./gradlew build -x test -i
     
     - name: Test with Gradle
-      run: ./gradlew -Dspring.profiles.active=test test -i
+      run: |
+        ./gradlew -Dspring.profiles.active=test 
+        -Dspring.aws.credentials.access-key=${{ secrets.S3_AWS_ACCESS_KEY_ID }}
+        -Dspring.aws.credentials.secret-key=${{ secrets.S3_AWS_SECRET_ACCESS_KEY }}
+        -Dspring.aws.region.static=${{ secrets.AWS_REGION }}
+        -Dspring.aws.s3.bucket=${{ secrets.AWS_S3_BUCKET }}
+        -Dspring.aws.cloudfront.domain=${{ secrets.AWS_CLOUDFRONT_DOMAIN }}
+        -Dpayment.toss.client-key=${{ secrets.TEST_CLIENT_KEY }}
+        -Dpayment.toss.security-key=${{ secrets.TEST_SECRET_KEY }}
+        test -i
+        
