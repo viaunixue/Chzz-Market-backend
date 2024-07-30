@@ -1,0 +1,24 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${{secret.S3_AWS_ACCESS_KEY_ID}}
+      secret-key: ${{secret.S3_AWS_SECRET_ACCESS_KEY}}
+    region:
+      static: ${{secret.AWS_REGION}}
+    s3:
+      bucket: ${{secret.AWS_S3_BUCKET}}
+    cloudfront:
+      domain: ${{secret.AWS_CLOUDFRONT_DOMAIN}}
+
+payment:
+  toss:
+    client-key: ${{secret.TEST_CLIENT_KEY}}
+    security-key: ${{secret.TEST_SECRET_KEY}}
+logging:
+  level:
+    org.springframework.security: trace
