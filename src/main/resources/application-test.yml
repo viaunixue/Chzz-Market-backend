@@ -6,19 +6,17 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: ${{secrets.S3_AWS_ACCESS_KEY_ID}}
-      secret-key: ${{secrets.S3_AWS_SECRET_ACCESS_KEY}}
+      access-key: test-access-key
+      secret-key: test-secret-key
     region:
-      static: ${{secrets.AWS_REGION}}
+      static: us-east-1
     s3:
-      bucket: ${{secrets.AWS_S3_BUCKET}}
-    cloudfront:
-      domain: ${{secrets.AWS_CLOUDFRONT_DOMAIN}}
+      bucket: test-bucket
 
 payment:
   toss:
-    client-key: ${{secrets.TEST_CLIENT_KEY}}
-    security-key: ${{secrets.TEST_SECRET_KEY}}
+    client-key: test
+    security-key: test
 logging:
   level:
     org.springframework.security: trace
