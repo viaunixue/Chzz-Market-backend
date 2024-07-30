@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 @TestConfiguration
-public class TestAWSConfig {
+public class AWSConfig {
     @Bean
     @Primary
     public AmazonS3 amazonS3() {

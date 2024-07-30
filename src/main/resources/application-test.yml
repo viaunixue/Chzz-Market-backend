@@ -3,20 +3,24 @@ spring:
     hibernate:
       ddl-auto: create
 
+
 cloud:
   aws:
     credentials:
-      access-key: test-access-key
-      secret-key: test-secret-key
+      access-key: test
+      secret-key: test
     region:
-      static: us-east-1
+      static: test
     s3:
-      bucket: test-bucket
+      bucket: test
+    cloudfront:
+      domain: https://test.cloudfront.net
 
 payment:
   toss:
-    client-key: test
-    security-key: test
+    client-key: test_ck_P9BRQmyarYleDvqAJl9vVJ07KzLN
+    security-key: test_sk_ORzdMaqN3woDka0GDmGN35AkYXQG
+
 logging:
   level:
     org.springframework.security: trace

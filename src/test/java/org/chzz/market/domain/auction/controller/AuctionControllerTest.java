@@ -1,13 +1,8 @@
 package org.chzz.market.domain.auction.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import org.chzz.market.common.TestAWSConfig;
+import org.chzz.market.common.AWSConfig;
 import org.chzz.market.domain.auction.dto.request.AuctionCreateRequest;
 import org.chzz.market.domain.auction.service.AuctionService;
-import org.chzz.market.domain.image.service.ImageService;
-import org.chzz.market.domain.image.service.ImageUploader;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MultipartFile;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -32,33 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(TestAWSConfig.class)
+@Import(AWSConfig.class)
 class AuctionControllerTest {
-    @MockBean
-    private ImageService imageService;
-
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext context;
-
     @MockBean
     private AuctionService auctionService;
-
-    @MockBean
-    private AmazonS3 amazonS3;
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-
-        // S3 모의 객체 설정
-        when(amazonS3.putObject(any(PutObjectRequest.class))).thenReturn(null);
-    }
 
     @Test
     @WithMockUser(username = "tester", roles = {"USER"})
@@ -86,8 +57,7 @@ class AuctionControllerTest {
                 "test image content 3".getBytes()
         );
 
-        when(auctionService.createAuction(any(AuctionCreateRequest.class)))
-                .thenReturn(1L);
+        when(auctionService.createAuction(any(AuctionCreateRequest.class))).thenReturn(1L);
 
         // When & Then
         mockMvc.perform(multipart("/api/v1/auctions")
