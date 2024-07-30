@@ -8,8 +8,6 @@ import org.chzz.market.common.error.exception.BusinessException;
 import org.chzz.market.common.error.ErrorCode;
 import org.chzz.market.common.error.ErrorResponse;
 import org.chzz.market.common.error.GlobalErrorCode;
-import org.chzz.market.common.error.exception.ImageUploadException;
-import org.chzz.market.common.error.exception.UserNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -53,28 +51,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                    final HttpStatusCode status,
                                                                    final WebRequest request) {
         final GlobalErrorCode errorCode = GlobalErrorCode.RESOURCE_NOT_FOUND;
-        logException(e, errorCode);
-        return handleExceptionInternal(errorCode);
-    }
-
-    /**
-     * 유저를 찾지 못할 때 발생하는 커스텀 예외
-     * @return e 커스텀 예외 메세지와 상태를 담은 {@link ResponseEntity}
-     */
-    @ExceptionHandler(UserNotFoundException.class)
-    protected ResponseEntity<?> handleUserNotFoundException(UserNotFoundException e) {
-        ErrorCode errorCode = GlobalErrorCode.USER_NOT_FOUND;
-        logException(e, errorCode);
-        return handleExceptionInternal(errorCode);
-    }
-
-    /**
-     *  이미지 업로드가 안될 때 발생하는 커스텀 예외
-     * @return e 커스텀 예외 메세지와 상태를 담은 {@link ResponseEntity}
-     */
-    @ExceptionHandler(ImageUploadException.class)
-    protected ResponseEntity<?> handleImageUploadFailedException(ImageUploadException e) {
-        ErrorCode errorCode = GlobalErrorCode.IMAGE_UPLOAD_FAILED;
         logException(e, errorCode);
         return handleExceptionInternal(errorCode);
     }
