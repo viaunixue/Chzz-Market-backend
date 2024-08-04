@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.like.entity.Like;
+import org.chzz.market.domain.product.error.ProductException;
+import org.chzz.market.domain.product.error.exception.ProductErrorCode;
 import org.chzz.market.domain.user.entity.User;
 
 @Getter
@@ -49,6 +51,15 @@ public class Product extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    // 사전 등록에도 경매 시작가는 포함
+    @Column(nullable = false)
+    private Integer minPrice;
+
+    // 상품도 상태 관리가 필요함
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductStatus status;
+
     @Builder.Default
     @OneToMany(mappedBy = "product")
     private List<Like> likes = new ArrayList<>();
@@ -66,5 +77,24 @@ public class Product extends BaseTimeEntity {
         OTHER("기타");
 
         private final String displayName;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum ProductStatus {
+        PRE_REGISTERED("사전 등록"),
+        IN_AUCTION("경매 등록"),
+        SOLD("판매 완료"),
+        CANCELLED("취소 됨");
+
+        private final String description;
+    }
+
+    // 사전 등록 -> 경매 등록 상태 변경
+    public void convertToAuction() {
+        if (this.status != ProductStatus.PRE_REGISTERED) {
+            throw new ProductException(ProductErrorCode.INVALID_PRODUCT_STATE);
+        }
+        this.status = ProductStatus.IN_AUCTION;
     }
 }
