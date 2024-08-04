@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.chzz.market.common.validation.annotation.ThousandMultiple;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.like.entity.Like;
 import org.chzz.market.domain.product.error.ProductException;
@@ -53,6 +54,7 @@ public class Product extends BaseTimeEntity {
 
     // 사전 등록에도 경매 시작가는 포함
     @Column(nullable = false)
+    @ThousandMultiple
     private Integer minPrice;
 
     // 상품도 상태 관리가 필요함
