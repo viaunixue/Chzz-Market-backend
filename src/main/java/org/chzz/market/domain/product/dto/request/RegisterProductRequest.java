@@ -12,9 +12,10 @@ import java.util.List;
 import static org.chzz.market.domain.product.entity.Product.*;
 
 /**
- * 경매 등록 / 사전 등록에 필요한 DTO
+ * 경매 등록 / 사전 등록 요청 DTO
  */
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
