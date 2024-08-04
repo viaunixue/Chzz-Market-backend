@@ -29,7 +29,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ProductService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
@@ -44,26 +44,35 @@ public class ProductService {
      */
     public RegisterProductResponse registerAuctionProduct(RegisterProductRequest request) {
         logger.info("사용자 {}의 경매 상품 등록을 시작합니다", request.getUserId());
+        Product product;
         List<String> uploadedImageUrls = new ArrayList<>();
+
         try {
-            // 이미지 업로드
-            if (request.getImages() != null && !request.getImages().isEmpty()) {
-                uploadedImageUrls = imageService.uploadImages(request.getImages());
-                logger.info("상품 경매 등록에 {} 개의 이미지 업로드", uploadedImageUrls.size());
-            }
-
             // 트랜잭션 내부에서 상품 경매 등록
-            RegisterProductResponse response = registerProductAndAuction(request, uploadedImageUrls, ProductStatus.IN_AUCTION);
-            logger.info("경매 상품이 성공적으로 등록되었습니다. 상품 ID: {}", response.productId());
-
-            return response;
+            product = registerProductAndAuction(request, ProductStatus.IN_AUCTION);
+            logger.info("경매 상품이 성공적으로 등록되었습니다. 상품 ID: {}", product.getId());
 
         } catch (Exception e) {
-            // 예외 발생 시 업로드 된 이미지 삭제
-            imageService.deleteUploadImages(uploadedImageUrls);
             logger.error("사용자 {}의 경매 상품 등록에 실패했습니다. 오류: {}", request.getUserId(), e.getMessage(), e);
             throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
         }
+
+        try {
+            // 트랜잭션 외부에서 이미지 업로드
+            if (request.getImages() != null && !request.getImages().isEmpty()) {
+                uploadedImageUrls = saveProductImages(product, request.getImages());
+                logger.info("상품 경매 등록에 {} 개의 이미지 업로드", uploadedImageUrls.size());
+            }
+        } catch (Exception e) {
+            // 예외 발생 시 업로드 된 이미지 삭제 및 상품 롤백
+            imageService.deleteUploadImages(uploadedImageUrls);
+            logger.error("사용자 {}의 경매 상품 이미지 저장에 실패했습니다. 상품 ID: {}. 오류: {}", request.getUserId(), product.getId(), e.getMessage(), e);
+            // 상품 롤백 로직 필요 시 구현
+            // productRepository.delete(product);
+            throw new ImageException(ImageErrorCode.IMAGE_SAVE_FAILED);
+        }
+
+        return new RegisterProductResponse(product.getId(), product.getStatus(), "상품이 등록되었습니다.");
     }
 
     /**
@@ -71,33 +80,43 @@ public class ProductService {
      */
     public RegisterProductResponse preRegisterProduct(RegisterProductRequest request) {
         logger.info("사용자 {}의 상품 사전 등록을 시작합니다", request.getUserId());
+        Product product;
         List<String> uploadedImageUrls = new ArrayList<>();
         try {
-            // 이미지 업로드
+            // 트랜잭션 내부에서 상품 사전 등록
+            product = registerProductAndAuction(request, ProductStatus.PRE_REGISTERED);
+            logger.info("상품이 성공적으로 사전 등록되었습니다. 상품 ID: {}", product.getId());
+
+        } catch (Exception e) {
+            logger.error("사용자 {}의 상품 사전 등록에 실패했습니다. 오류: {}", request.getUserId(), e.getMessage(), e);
+            throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
+        }
+
+        try {
+            // 트랜잭션 외부에서 이미지 업로드
             if (request.getImages() != null && !request.getImages().isEmpty()) {
                 uploadedImageUrls = imageService.uploadImages(request.getImages());
                 logger.info("상품 사전 등록에 {} 개의 이미지 업로드", uploadedImageUrls.size());
             }
-
-            // 트랜잭션 내부에서 상품 사전 등록
-            RegisterProductResponse response = registerProductAndAuction(request, uploadedImageUrls, ProductStatus.PRE_REGISTERED);
-            logger.info("상품이 성공적으로 사전 등록되었습니다. 상품 ID: {}", response.productId());
-
-            return response;
         } catch (Exception e) {
             // 이미지 업로드 실패 시 업로드 된 이미지 삭제
             imageService.deleteUploadImages(uploadedImageUrls);
-            logger.error("사용자 {}의 상품 사전 등록에 실패했습니다. 오류: {}", request.getUserId(), e.getMessage(), e);
-            throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
+            logger.error("사용자 {}의 상품 사전 등록 이미지 저장에 실패했습니다. 오류: {}", request.getUserId(), e.getMessage(), e);
+            // 상품 롤백 로직 필요 시 구현
+            // productRepository.delete(product);
+            throw new ImageException(ImageErrorCode.IMAGE_SAVE_FAILED);
         }
+
+        return new RegisterProductResponse(product.getId(), product.getStatus(), "상품이 등록되었습니다.");
     }
 
     /**
      * 상품 등록 및 경매 생성
      */
     @Transactional
-    protected RegisterProductResponse registerProductAndAuction(RegisterProductRequest request, List<String> imageUrls, ProductStatus status){
+    protected Product registerProductAndAuction(RegisterProductRequest request, ProductStatus status){
         logger.debug("상품 및 경매 등록 프로세스를 시작합니다");
+
         // 유저 유효성 검사
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> {
@@ -109,12 +128,6 @@ public class ProductService {
         product = productRepository.save(product);
         logger.info("ID가 {}인 상품이 저장되었습니다", product.getId());
 
-        // 이미지 엔티티 저장
-        if (!imageUrls.isEmpty()) {
-            imageService.saveProductImageEntities(product, imageUrls);
-            logger.info("상품 ID {}에 대해 {} 개의 이미지 엔티티를 저장했습니다", product.getId(), imageUrls.size());
-        }
-
         // 상품 상태에 따라 분기 처리
         if (status == ProductStatus.IN_AUCTION) {
             auctionService.proceedingAuctionForProduct(product);
@@ -124,7 +137,7 @@ public class ProductService {
             logger.info("상품 ID {}에 대해 대기 중인 경매를 생성했습니다", product.getId());
         }
 
-        return new RegisterProductResponse(product.getId(), product.getStatus(), "상품이 등록되었습니다.");
+        return product;
     }
 
     /**
