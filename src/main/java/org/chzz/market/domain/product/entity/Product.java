@@ -99,4 +99,13 @@ public class Product extends BaseTimeEntity {
         }
         this.status = ProductStatus.IN_AUCTION;
     }
+
+    // 경매 등록 -> 판매 됨 상태 변경
+    public void convertToSold() {
+        if (this.status != ProductStatus.IN_AUCTION) {
+            throw new IllegalStateException("경매 중인 제품만 판매됨으로 표시할 수 있습니다.");
+        }
+        this.status = ProductStatus.SOLD;
+    }
+
 }

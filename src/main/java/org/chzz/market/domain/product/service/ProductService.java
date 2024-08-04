@@ -2,6 +2,8 @@ package org.chzz.market.domain.product.service;
 
 import lombok.RequiredArgsConstructor;
 
+import org.chzz.market.domain.auction.entity.Auction;
+import org.chzz.market.domain.auction.repository.AuctionRepository;
 import org.chzz.market.domain.image.error.ImageErrorCode;
 import org.chzz.market.domain.image.error.exception.ImageException;
 import org.chzz.market.domain.product.dto.request.RegisterProductRequest;
@@ -35,6 +37,7 @@ public class ProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     private final ProductRepository productRepository;
+    private final AuctionRepository auctionRepository;
     private final UserRepository userRepository;
     private final AuctionService auctionService;
     private final ImageService imageService;
@@ -101,11 +104,8 @@ public class ProductService {
         } catch (ProductException e) {
             logger.error("사용자 {}의 상품 사전 등록에 실패했습니다. 상품 ID: {}", request.getUserId(), e.getMessage(), e);
             throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
-        } catch (UserException e) {
-            logger.error("사용자를 찾을 수 없음: {}", e.getMessage(), e);
-            throw new UserException(UserErrorCode.USER_NOT_FOUND);
         } catch (Exception e) {
-            logger.error("사용자 {}의 상품 사전 등록에 실패했습니다. 오류: {}", request.getUserId(), e.getMessage(), e);
+            logger.error("사용자 {}의 상품 사전 등록 중 예기치 않은 오류 발생: {}", request.getUserId(), e.getMessage(), e);
             throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
         }
 
@@ -167,23 +167,23 @@ public class ProductService {
     @Transactional
     public RegisterProductResponse convertToAuction(Long productId) {
         logger.info("상품을 경매로 전환하기 시작합니다. 상품 ID: {}", productId);
+        // 상품 유효성 검사
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    logger.error("ID가 {}인 상품을 찾을 수 없습니다", productId);
+                    return new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND);
+                });
+
+        // 상품 상태 유효성 검사
+        if (product.getStatus() != ProductStatus.PRE_REGISTERED) {
+            logger.error("전환을 위한 상품 상태가 유효하지 않습니다. 상품 ID: {}, 현재 상태: {}", productId, product.getStatus());
+            throw new ProductException(ProductErrorCode.INVALID_PRODUCT_STATE);
+        }
+
         try {
-            // 상품 유효성 검사
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> {
-                        logger.error("ID가 {}인 상품을 찾을 수 없습니다", productId);
-                        return new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND);
-                    });
-
-            // 상품 상태 유효성 검사
-            if (product.getStatus() != ProductStatus.PRE_REGISTERED) {
-                logger.error("전환을 위한 상품 상태가 유효하지 않습니다. 상품 ID: {}, 현재 상태: {}", productId, product.getStatus());
-                throw new ProductException(ProductErrorCode.INVALID_PRODUCT_STATE);
-            }
-
             // 상품 상태 사전 등록 -> 경매 등록 전환 및 저장
             product.convertToAuction();
-            productRepository.save(product);
+            product = productRepository.save(product);
             logger.info("상품 상태가 [[ IN_AUCTION ]] 으로 변경되었습니다. 상품 ID: {}", productId);
 
             // 경매 상품 상태 대기 -> 진행 상태로 전환
@@ -194,8 +194,11 @@ public class ProductService {
             logger.info("상품이 성공적으로 경매로 전환되었습니다. 상품 ID: {}", productId);
 
             return response;
-        } catch (Exception e) {
+        } catch (ProductException e) {
             logger.error("상품을 경매로 전환하는 데 실패했습니다. 상품 ID: {}. 오류: {}", productId, e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("상품을 경매로 전환하는 데 예기치 않은 오류가 발생했습니다. 상품 ID: {}. 오류: {}", productId, e.getMessage(), e);
             throw new ProductException(ProductErrorCode.INVALID_PRODUCT_STATE);
         }
     }
@@ -231,5 +234,31 @@ public class ProductService {
                 .minPrice(request.getMinPrice())
                 .status(status)
                 .build();
+    }
+
+    /**
+     * 테스트를 위한 실패 옵션을 포함한 상품 전환
+     */
+    public RegisterProductResponse convertToAuctionWithPossibleFailure(Long productId, boolean shouldFail) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        if (product.getStatus() != ProductStatus.PRE_REGISTERED) {
+            throw new ProductException(ProductErrorCode.INVALID_PRODUCT_STATE);
+        }
+
+        product.convertToAuction();
+        productRepository.save(product);
+
+        Auction auction = auctionRepository.findByProduct(product).orElseThrow();
+        auction.convertToProceeding();
+        auctionRepository.save(auction);
+
+        // 테스트를 위한 실패 옵션
+        if (shouldFail) {
+            throw new RuntimeException("테스트를 위한 실패 옵션");
+        }
+
+        return new RegisterProductResponse(product.getId(), product.getStatus(), "경매 상품으로 전환되었습니다.");
     }
 }
