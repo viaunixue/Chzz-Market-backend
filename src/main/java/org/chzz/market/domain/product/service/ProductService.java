@@ -52,8 +52,14 @@ public class ProductService {
             product = registerProductAndAuction(request, ProductStatus.IN_AUCTION);
             logger.info("경매 상품이 성공적으로 등록되었습니다. 상품 ID: {}", product.getId());
 
-        } catch (Exception e) {
+        } catch (ProductException e) {
             logger.error("사용자 {}의 경매 상품 등록에 실패했습니다. 오류: {}", request.getUserId(), e.getMessage(), e);
+            throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
+        } catch (UserException e) {
+            logger.error("사용자를 찾을 수 없음: {}", e.getMessage(), e);
+            throw new UserException(UserErrorCode.USER_NOT_FOUND);
+        } catch (Exception e) {
+            logger.error("사용자 {}의 경매 상품 등록 중 예기치 않은 오류 발생: {}", request.getUserId(), e.getMessage(), e);
             throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
         }
 
@@ -63,13 +69,18 @@ public class ProductService {
                 uploadedImageUrls = saveProductImages(product, request.getImages());
                 logger.info("상품 경매 등록에 {} 개의 이미지 업로드", uploadedImageUrls.size());
             }
-        } catch (Exception e) {
-            // 예외 발생 시 업로드 된 이미지 삭제 및 상품 롤백
-            imageService.deleteUploadImages(uploadedImageUrls);
-            logger.error("사용자 {}의 경매 상품 이미지 저장에 실패했습니다. 상품 ID: {}. 오류: {}", request.getUserId(), product.getId(), e.getMessage(), e);
-            // 상품 롤백 로직 필요 시 구현
-            // productRepository.delete(product);
-            throw new ImageException(ImageErrorCode.IMAGE_SAVE_FAILED);
+
+        } catch (ImageException e) {
+            logger.error("이미지 업로드 중 오류 발생: {}", e.getMessage(), e);
+            if (!uploadedImageUrls.isEmpty()) {
+                try {
+                    imageService.deleteUploadImages(uploadedImageUrls);
+                    logger.info("상품 경매 등록에 실패한 이미지 업로드를 삭제했습니다");
+                } catch (Exception ee) {
+                    logger.warn("업로드된 이미지 삭제 중 오류 발생: {}", ee.getMessage(), ee);
+
+                }
+            }
         }
 
         return new RegisterProductResponse(product.getId(), product.getStatus(), "상품이 등록되었습니다.");
@@ -87,6 +98,12 @@ public class ProductService {
             product = registerProductAndAuction(request, ProductStatus.PRE_REGISTERED);
             logger.info("상품이 성공적으로 사전 등록되었습니다. 상품 ID: {}", product.getId());
 
+        } catch (ProductException e) {
+            logger.error("사용자 {}의 상품 사전 등록에 실패했습니다. 상품 ID: {}", request.getUserId(), e.getMessage(), e);
+            throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
+        } catch (UserException e) {
+            logger.error("사용자를 찾을 수 없음: {}", e.getMessage(), e);
+            throw new UserException(UserErrorCode.USER_NOT_FOUND);
         } catch (Exception e) {
             logger.error("사용자 {}의 상품 사전 등록에 실패했습니다. 오류: {}", request.getUserId(), e.getMessage(), e);
             throw new ProductException(ProductErrorCode.PRODUCT_REGISTER_FAILED);
@@ -98,13 +115,17 @@ public class ProductService {
                 uploadedImageUrls = imageService.uploadImages(request.getImages());
                 logger.info("상품 사전 등록에 {} 개의 이미지 업로드", uploadedImageUrls.size());
             }
-        } catch (Exception e) {
-            // 이미지 업로드 실패 시 업로드 된 이미지 삭제
-            imageService.deleteUploadImages(uploadedImageUrls);
-            logger.error("사용자 {}의 상품 사전 등록 이미지 저장에 실패했습니다. 오류: {}", request.getUserId(), e.getMessage(), e);
-            // 상품 롤백 로직 필요 시 구현
-            // productRepository.delete(product);
-            throw new ImageException(ImageErrorCode.IMAGE_SAVE_FAILED);
+        } catch (ImageException e) {
+            logger.error("이미지 업로드 중 오류 발생: {}", e.getMessage(), e);
+            if (!uploadedImageUrls.isEmpty()) {
+                try {
+                    imageService.deleteUploadImages(uploadedImageUrls);
+                    logger.info("상품 경매 등록에 실패한 이미지 업로드를 삭제했습니다");
+                } catch (Exception ee) {
+                    logger.warn("업로드된 이미지 삭제 중 오류 발생: {}", ee.getMessage(), ee);
+                }
+            }
+            throw e;
         }
 
         return new RegisterProductResponse(product.getId(), product.getStatus(), "상품이 등록되었습니다.");
