@@ -1,4 +1,4 @@
-package org.chzz.market.domain.user.error;
+package org.chzz.market.domain.user.error.exception;
 
 import org.chzz.market.common.error.ErrorCode;
 import org.chzz.market.common.error.exception.BusinessException;

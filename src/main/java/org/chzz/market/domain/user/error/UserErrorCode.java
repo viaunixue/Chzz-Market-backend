@@ -1,4 +1,4 @@
-package org.chzz.market.domain.user.error.exception;
+package org.chzz.market.domain.user.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
