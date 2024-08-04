@@ -1,6 +1,6 @@
 package org.chzz.market.domain.auction.repository;
 
-import static org.chzz.market.domain.auction.entity.Auction.Status.PROCEEDING;
+import static org.chzz.market.domain.auction.entity.Auction.AuctionStatus;
 import static org.chzz.market.domain.auction.entity.QAuction.auction;
 import static org.chzz.market.domain.auction.entity.SortType.CHEAP;
 import static org.chzz.market.domain.auction.entity.SortType.EXPENSIVE;
@@ -41,7 +41,7 @@ public class AuctionRepositoryImpl implements AuctionRepositoryCustom {
                 .join(auction.product, product)
                 .leftJoin(bid).on(bid.auction.id.eq(auction.id))
                 .where(auction.product.category.eq(category))
-                .where(auction.status.eq(PROCEEDING));
+                .where(auction.status.eq(AuctionStatus.PROCEEDING));
 
         List<AuctionResponse> content = baseQuery
                 .select(new QAuctionResponse(

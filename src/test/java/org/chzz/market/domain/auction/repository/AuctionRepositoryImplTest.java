@@ -8,6 +8,7 @@ import java.util.List;
 import org.chzz.market.common.DatabaseTest;
 import org.chzz.market.domain.auction.dto.AuctionResponse;
 import org.chzz.market.domain.auction.entity.Auction;
+import org.chzz.market.domain.auction.entity.Auction.AuctionStatus;
 import org.chzz.market.domain.auction.entity.SortType;
 import org.chzz.market.domain.bid.entity.Bid;
 import org.chzz.market.domain.bid.repository.BidRepository;
@@ -63,11 +64,11 @@ class AuctionRepositoryImplTest {
         Product product3 = Product.builder().user(user2).name("제품3").category(Category.FASHION_AND_CLOTHING).build();
         productRepository.saveAll(List.of(product1, product2, product3));
 
-        Auction auction1 = Auction.builder().product(product1).minPrice(1000).status(Auction.Status.PROCEEDING)
+        Auction auction1 = Auction.builder().product(product1).minPrice(1000).status(AuctionStatus.PROCEEDING)
                 .build();
-        Auction auction2 = Auction.builder().product(product2).minPrice(2000).status(Auction.Status.PROCEEDING)
+        Auction auction2 = Auction.builder().product(product2).minPrice(2000).status(AuctionStatus.PROCEEDING)
                 .build();
-        Auction auction3 = Auction.builder().product(product3).minPrice(3000).status(Auction.Status.PROCEEDING)
+        Auction auction3 = Auction.builder().product(product3).minPrice(3000).status(AuctionStatus.PROCEEDING)
                 .build();
         auctionRepository.saveAll(List.of(auction1, auction2, auction3));
 
