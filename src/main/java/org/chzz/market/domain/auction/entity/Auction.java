@@ -61,7 +61,7 @@ public class Auction extends BaseTimeEntity {
     // 대기 중 -> 진행 중 상태 변경
     public void convertToProceeding() {
         if (this.status != AuctionStatus.PENDING) {
-            throw new AuctionException(AuctionErrorCode.CONVERT_TO_PROCEEDING);
+            throw new AuctionException(AuctionErrorCode.INVALID_AUCTION_STATE);
         }
         this.status = AuctionStatus.PROCEEDING;
     }
