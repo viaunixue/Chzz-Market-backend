@@ -58,16 +58,16 @@ class AuctionRepositoryImplTest {
         User user2 = User.builder().providerId("12345").nickname("닉네임2").email("asd1@naver.com").build();
         userRepository.saveAll(List.of(user1, user2));
 
-        Product product1 = Product.builder().user(user1).name("제품1").category(Category.FASHION).build();
-        Product product2 = Product.builder().user(user1).name("제품2").category(Category.BOOK).build();
-        Product product3 = Product.builder().user(user2).name("제품3").category(Category.FASHION).build();
+        Product product1 = Product.builder().user(user1).name("제품1").category(Category.FASHION_AND_CLOTHING).build();
+        Product product2 = Product.builder().user(user1).name("제품2").category(Category.BOOKS_AND_MEDIA).build();
+        Product product3 = Product.builder().user(user2).name("제품3").category(Category.FASHION_AND_CLOTHING).build();
         productRepository.saveAll(List.of(product1, product2, product3));
 
-        Auction auction1 = Auction.builder().product(product1).minPrice(1000L).status(Auction.Status.PROCEEDING)
+        Auction auction1 = Auction.builder().product(product1).minPrice(1000).status(Auction.Status.PROCEEDING)
                 .build();
-        Auction auction2 = Auction.builder().product(product2).minPrice(2000L).status(Auction.Status.PROCEEDING)
+        Auction auction2 = Auction.builder().product(product2).minPrice(2000).status(Auction.Status.PROCEEDING)
                 .build();
-        Auction auction3 = Auction.builder().product(product3).minPrice(3000L).status(Auction.Status.PROCEEDING)
+        Auction auction3 = Auction.builder().product(product3).minPrice(3000).status(Auction.Status.PROCEEDING)
                 .build();
         auctionRepository.saveAll(List.of(auction1, auction2, auction3));
 
@@ -101,7 +101,7 @@ class AuctionRepositoryImplTest {
 
         //when
         Page<AuctionResponse> result = auctionRepository.findAuctionsByCategory(
-                Category.FASHION, SortType.EXPENSIVE, 1L, pageable);
+                Category.FASHION_AND_CLOTHING, SortType.EXPENSIVE, 1L, pageable);
 
         //then
         assertThat(result).isNotNull();
@@ -124,7 +124,7 @@ class AuctionRepositoryImplTest {
 
         //when
         Page<AuctionResponse> result = auctionRepository.findAuctionsByCategory(
-                Category.FASHION, SortType.POPULARITY, 2L, pageable);
+                Category.FASHION_AND_CLOTHING, SortType.POPULARITY, 2L, pageable);
 
         //then
         assertThat(result).isNotNull();
@@ -147,7 +147,7 @@ class AuctionRepositoryImplTest {
 
         //when
         Page<AuctionResponse> result = auctionRepository.findAuctionsByCategory(
-                Category.TOY, SortType.EXPENSIVE, 1L, pageable);
+                Category.TOYS_AND_HOBBIES, SortType.EXPENSIVE, 1L, pageable);
 
         //then
         assertThat(result).isNotNull();

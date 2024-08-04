@@ -16,12 +16,12 @@ public class AuctionResponse {
     private String name;
     private String cdnPath;
     private Long timeRemaining;
-    private Long minPrice;
+    private Integer minPrice;
     private Long participantCount;
     private Boolean isParticipating;
 
     @QueryProjection
-    public AuctionResponse(Long id, String name, String cdnPath, LocalDateTime createdAt, Long minPrice,
+    public AuctionResponse(Long id, String name, String cdnPath, LocalDateTime createdAt, Integer minPrice,
                            Long participantCount,
                            Boolean isParticipating) {
         this.id = id;

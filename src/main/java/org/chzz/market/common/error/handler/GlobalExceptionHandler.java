@@ -4,7 +4,7 @@ package org.chzz.market.common.error.handler;
 import static org.chzz.market.common.error.GlobalErrorCode.INTERNAL_SERVER_ERROR;
 
 import lombok.extern.slf4j.Slf4j;
-import org.chzz.market.common.error.BusinessException;
+import org.chzz.market.common.error.exception.BusinessException;
 import org.chzz.market.common.error.ErrorCode;
 import org.chzz.market.common.error.ErrorResponse;
 import org.chzz.market.common.error.GlobalErrorCode;
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logException(e, errorCode);
         return handleExceptionInternal(errorCode);
     }
-    
+
     @Nullable
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(final MissingServletRequestParameterException e,
@@ -71,13 +71,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logException(exception, INTERNAL_SERVER_ERROR, exception.getResponseBodyAsString());
         return handleExceptionInternal(INTERNAL_SERVER_ERROR);
     }
-    
+
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
                 .body(ErrorResponse.from(errorCode));
     }
-    
+
     private void logException(final Exception e, final ErrorCode errorCode) {
         log.error(LOG_FORMAT,
                 e.getClass(),
