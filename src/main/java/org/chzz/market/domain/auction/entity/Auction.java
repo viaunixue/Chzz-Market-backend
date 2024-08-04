@@ -11,12 +11,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.chzz.market.common.validation.annotation.ThousandMultiple;
+import org.chzz.market.domain.auction.error.AuctionErrorCode;
+import org.chzz.market.domain.auction.error.exception.AuctionException;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.product.entity.Product;
 import org.chzz.market.domain.user.entity.User;
@@ -47,16 +45,24 @@ public class Auction extends BaseTimeEntity {
 
     @Column(columnDefinition = "varchar(20)")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private AuctionStatus status;
 
     @Getter
     @AllArgsConstructor
-    public enum Status {
+    public enum AuctionStatus {
         PENDING("대기 중"),
         PROCEEDING("진행 중"),
         ENDED("종료"),
         CANCELLED("취소 됨");
 
         private final String description;
+    }
+
+    // 대기 중 -> 진행 중 상태 변경
+    public void convertToProceeding() {
+        if (this.status != AuctionStatus.PENDING) {
+            throw new AuctionException(AuctionErrorCode.CONVERT_TO_PROCEEDING);
+        }
+        this.status = AuctionStatus.PROCEEDING;
     }
 }
