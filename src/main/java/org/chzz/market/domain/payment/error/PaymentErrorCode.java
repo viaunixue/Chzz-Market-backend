@@ -13,9 +13,4 @@ public enum PaymentErrorCode implements ErrorCode {
     CREATION_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "orderId 생성에 실패했습니다. 다시 시도해주세요.");
     private final HttpStatus httpStatus;
     private final String message;
-
-    @Override
-    public String getCode() {
-        return "";
-    }
 }

@@ -1,4 +1,4 @@
-package org.chzz.market.domain.image.error;
+package org.chzz.market.domain.user.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum ImageErrorCode implements ErrorCode {
-    IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드를 실패했습니다.");
+public enum UserErrorCode implements ErrorCode {
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
