@@ -35,10 +35,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Nullable
     @Override
-    protected ResponseEntity<Object> handleMissingServletRequestParameter(final MissingServletRequestParameterException e,
-                                                                          final HttpHeaders headers,
-                                                                          final HttpStatusCode status,
-                                                                          final WebRequest request) {
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            final MissingServletRequestParameterException e,
+            final HttpHeaders headers,
+            final HttpStatusCode status,
+            final WebRequest request) {
         GlobalErrorCode errorCode = GlobalErrorCode.UNSUPPORTED_PARAMETER_NAME;
         logException(e, errorCode);
         return handleExceptionInternal(errorCode);

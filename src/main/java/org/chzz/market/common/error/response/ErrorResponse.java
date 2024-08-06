@@ -7,7 +7,6 @@ import org.chzz.market.common.error.ErrorCode;
 public record ErrorResponse(String code, String message, int status) {
     public static ErrorResponse from(final ErrorCode errorCode){
         return ErrorResponse.builder()
-                .code(errorCode.getCode())
                 .status(errorCode.getHttpStatus().value())
                 .message(errorCode.getMessage())
                 .build();

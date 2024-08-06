@@ -11,7 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.*;
+import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.chzz.market.common.validation.annotation.ThousandMultiple;
 import org.chzz.market.domain.auction.error.AuctionErrorCode;
 import org.chzz.market.domain.auction.error.exception.AuctionException;
@@ -36,12 +41,15 @@ public class Auction extends BaseTimeEntity {
     private Product product;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = true)
+    @JoinColumn(name = "user_id", nullable = true)
     private User winner;
 
     @Column
     @ThousandMultiple
     private Integer minPrice;
+
+    @Column
+    private LocalDateTime endDateTime;
 
     @Column(columnDefinition = "varchar(20)")
     @Enumerated(EnumType.STRING)

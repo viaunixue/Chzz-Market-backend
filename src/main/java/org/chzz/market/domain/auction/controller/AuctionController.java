@@ -22,4 +22,9 @@ public class AuctionController {
                                             Pageable pageable) {
         return ResponseEntity.ok(auctionService.getAuctionListByCategory(category, type, 1L, pageable)); // 임의의 사용자 ID
     }
+
+    @GetMapping("/{auctionId}")
+    public ResponseEntity<?> getAuctionDetails(@PathVariable Long auctionId) {
+        return ResponseEntity.ok(auctionService.getAuctionDetails(auctionId, 1L)); // TODO: 추후에 인증된 사용자 정보로 수정 필요
+    }
 }
