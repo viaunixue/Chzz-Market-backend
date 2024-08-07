@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import org.chzz.market.domain.auction.dto.AuctionDetailsResponse;
 import org.chzz.market.domain.auction.entity.Auction;
-import org.chzz.market.domain.auction.error.exception.AuctionException;
+import org.chzz.market.domain.auction.error.AuctionException;
 import org.chzz.market.domain.auction.repository.AuctionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,5 +1,7 @@
 package org.chzz.market.domain.auction.service;
 
+import static org.chzz.market.domain.auction.error.AuctionErrorCode.AUCTION_NOT_ACCESSIBLE;
+import static org.chzz.market.domain.auction.error.AuctionErrorCode.AUCTION_NOT_FOUND;
 import org.chzz.market.domain.auction.dto.AuctionDetailsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +10,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 import org.chzz.market.domain.auction.error.AuctionErrorCode;
-import org.chzz.market.domain.auction.error.exception.AuctionException;
+import org.chzz.market.domain.auction.error.AuctionException;
 import org.chzz.market.domain.auction.entity.Auction;
 import org.chzz.market.domain.auction.dto.AuctionResponse;
 import org.chzz.market.domain.auction.entity.SortType;
@@ -74,13 +76,19 @@ public class AuctionService {
         auctionRepository.save(auction);
     }
 
-    public AuctionDetailsResponse getAuctionDetails(Long auctionId, Long userId) {
-        Optional<AuctionDetailsResponse> auctionDetails = auctionRepository.findAuctionDetailsById(auctionId, userId);
-        return auctionDetails.orElseThrow(() -> new AuctionException(AuctionErrorCode.AUCTION_NOT_ACCESSIBLE));
+    public Auction getAuction(Long auctionId) {
+        return auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AuctionException(AUCTION_NOT_FOUND));
     }
 
     public Page<AuctionResponse> getAuctionListByCategory(Category category, SortType sortType, Long userId,
                                                       Pageable pageable) {
         return auctionRepository.findAuctionsByCategory(category, sortType, userId, pageable);
     }
+
+    public AuctionDetailsResponse getAuctionDetails(Long auctionId, Long userId) {
+        Optional<AuctionDetailsResponse> auctionDetails = auctionRepository.findAuctionDetailsById(auctionId, userId);
+        return auctionDetails.orElseThrow(() -> new AuctionException(AUCTION_NOT_ACCESSIBLE));
+    }
+
 }

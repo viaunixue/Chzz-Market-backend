@@ -1,7 +1,7 @@
 package org.chzz.market.domain.auction.repository;
 
-import static org.chzz.market.domain.auction.entity.Auction.AuctionStatus.ENDED;
 import static org.chzz.market.domain.auction.entity.Auction.AuctionStatus.PROCEEDING;
+import static org.chzz.market.domain.auction.entity.Auction.AuctionStatus.ENDED;
 import static org.chzz.market.domain.auction.entity.QAuction.auction;
 import static org.chzz.market.domain.auction.entity.SortType.CHEAP;
 import static org.chzz.market.domain.auction.entity.SortType.EXPENSIVE;
@@ -49,8 +49,6 @@ public class AuctionRepositoryImpl implements AuctionRepositoryCustom {
     @Override
     public Page<AuctionResponse> findAuctionsByCategory(Category category, SortType sortType, Long userId,
                                                         Pageable pageable) {
-        QImage imageSub = new QImage("imageSub");
-
         JPAQuery<?> baseQuery = jpaQueryFactory.from(auction)
                 .join(auction.product, product)
                 .leftJoin(bid).on(bid.auction.id.eq(auction.id))

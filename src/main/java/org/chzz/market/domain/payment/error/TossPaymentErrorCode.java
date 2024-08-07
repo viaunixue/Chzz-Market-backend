@@ -66,11 +66,6 @@ public enum TossPaymentErrorCode implements ErrorCode {
                 .asErrorCode();
     }
 
-    @Override
-    public String getCode() {
-        return "";
-    }
-
     private record TossErrorResponse(String code,
                              String message) {
         TossPaymentErrorCode asErrorCode() {

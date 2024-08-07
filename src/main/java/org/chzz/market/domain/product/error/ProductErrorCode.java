@@ -1,4 +1,4 @@
-package org.chzz.market.domain.product.error.exception;
+package org.chzz.market.domain.product.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,9 +14,4 @@ public enum ProductErrorCode implements ErrorCode {
 
     private final HttpStatus httpStatus;
     private final String message;
-
-    @Override
-    public String getCode() {
-        return "";
-    }
 }

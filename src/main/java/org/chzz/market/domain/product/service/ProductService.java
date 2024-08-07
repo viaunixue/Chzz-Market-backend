@@ -13,7 +13,7 @@ import org.chzz.market.domain.product.dto.response.RegisterProductResponse;
 import org.chzz.market.domain.product.entity.Product;
 import org.chzz.market.domain.product.entity.Product.ProductStatus;
 import org.chzz.market.domain.product.error.ProductException;
-import org.chzz.market.domain.product.error.exception.ProductErrorCode;
+import org.chzz.market.domain.product.error.ProductErrorCode;
 import org.chzz.market.domain.product.repository.ProductRepository;
 import org.chzz.market.domain.user.entity.User;
 import org.chzz.market.domain.user.error.exception.UserException;

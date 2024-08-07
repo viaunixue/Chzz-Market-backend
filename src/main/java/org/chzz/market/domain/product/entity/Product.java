@@ -22,7 +22,7 @@ import org.chzz.market.common.validation.annotation.ThousandMultiple;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.like.entity.Like;
 import org.chzz.market.domain.product.error.ProductException;
-import org.chzz.market.domain.product.error.exception.ProductErrorCode;
+import org.chzz.market.domain.product.error.ProductErrorCode;
 import org.chzz.market.domain.user.entity.User;
 
 @Getter

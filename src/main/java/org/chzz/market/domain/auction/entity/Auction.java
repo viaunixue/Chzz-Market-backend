@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.chzz.market.common.validation.annotation.ThousandMultiple;
 import org.chzz.market.domain.auction.error.AuctionErrorCode;
-import org.chzz.market.domain.auction.error.exception.AuctionException;
+import org.chzz.market.domain.auction.error.AuctionException;
 import org.chzz.market.domain.base.entity.BaseTimeEntity;
 import org.chzz.market.domain.product.entity.Product;
 import org.chzz.market.domain.user.entity.User;
@@ -54,6 +54,21 @@ public class Auction extends BaseTimeEntity {
     @Column(columnDefinition = "varchar(20)")
     @Enumerated(EnumType.STRING)
     private AuctionStatus status;
+
+    // 경매가 진행 중인지 확인
+    public boolean isProceeding() {
+        return status == AuctionStatus.PROCEEDING;
+    }
+
+    // 경매가 종료되었는지 확인
+    public boolean isEnded() {
+        return LocalDateTime.now().isAfter(endDateTime);
+    }
+
+    // 입찰 금액이 최소 금액 이상인지 확인
+    public boolean isAboveMinPrice(Long amount) {
+        return amount >= minPrice;
+    }
 
     @Getter
     @AllArgsConstructor

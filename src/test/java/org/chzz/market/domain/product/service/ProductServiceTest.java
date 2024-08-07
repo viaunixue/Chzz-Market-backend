@@ -8,8 +8,8 @@ import org.chzz.market.domain.auction.repository.AuctionRepository;
 import org.chzz.market.domain.image.service.ImageService;
 import org.chzz.market.domain.product.dto.response.RegisterProductResponse;
 import org.chzz.market.domain.product.entity.Product;
+import org.chzz.market.domain.product.error.ProductErrorCode;
 import org.chzz.market.domain.product.error.ProductException;
-import org.chzz.market.domain.product.error.exception.ProductErrorCode;
 import org.chzz.market.domain.product.repository.ProductRepository;
 import org.chzz.market.domain.user.entity.User;
 import org.chzz.market.domain.user.repository.UserRepository;
@@ -26,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
